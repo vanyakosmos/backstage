@@ -25,16 +25,15 @@ export const useConsumerGroupsForEntity = () => {
 
   return useMemo(() => {
     return annotation.split(',').map(consumer => {
-      const [clusterId, consumerGroup] = consumer.split('/');
-
-      if (!clusterId || !consumerGroup) {
-        throw new Error(
-          `Failed to parse kafka consumer group annotation: got "${annotation}"`,
-        );
+      let [clusterId, consumerGroup] = consumer.split('/', 2);
+      
+      if (!consumerGroup) {
+        consumerGroup = clusterId;
+        clusterId = null;
       }
 
       return {
-        clusterId: clusterId.trim(),
+        clusterId: clusterId && clusterId.trim(),
         consumerGroup: consumerGroup.trim(),
       };
     });
